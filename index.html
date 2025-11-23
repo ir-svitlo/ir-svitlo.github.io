@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="uk">
+<title>Світло Кропивницький місто</title>
+<style>
+.js-message_text {
+  background-color: whitesmoke;
+  border: 1px solid dimgray;
+  border-radius: 0.5em;
+  margin: 1em 0.5em 1.5em;
+  padding: 1em;
+}
+table {
+  border-collapse: collapse;
+}
+td {
+  border: 1px solid darkgray;
+  text-align: center;
+  min-width: 2ch;
+  padding: 0.25em 0.25ch;
+}
+.light {
+  background-color: #FF5;
+}
+.outage {
+  background-color: #333;
+}
+.emoji {
+  background-size: 100%;
+  display: inline-block;
+  text-indent: -10em;
+  width: 1.25em;
+}
+</style>
+<script>
+const is_outg = ln => ln.startsWith("Черга ")
+const thead = () => {
+  return "<table><tr><td></td><td>" + [...Array(24).keys()].join("</td><td>") + "</td></tr>"
+}
+(async () => {
+  const res = await fetch("https://api.codetabs.com/v1/proxy/?quest=https://t.me/s/SvitloKropyvnytskyiMisto")
+  const html = await res.text()
+  const dom = new DOMParser().parseFromString(html, "text/html")
+  const msgs = Array.from(dom.querySelectorAll(".js-message_text")).reverse()
+  for (const m of msgs) {
+    const div = document.createElement("div")
+    div.classList.add("js-message_text")
+    const lines = (m.innerHTML.split("<br>"))
+    div.innerHTML = lines.map((ln, ln_num) => {
+      if (is_outg(ln)) {
+        const [name, data] = ln.split(/\s*:\s*/)
+        if (name == "Черга 2.1" || name == "Черга 6.1") {
+          const hours = Array(24).fill("<td class=\"light\"></td>")
+          const outgs = data.split(/\s*,\s*/)
+          for (const o of outgs) {
+            const [o1, o2] = o.split(/\s*-\s*/).map(n => parseInt(n))
+            for (let i = o1, len = hours.length; i < o2 && i < len; i++)
+              hours[i] = "<td class=\"outage\"></td>"
+          }
+          ln = "<tr><td>" + name + "</td>" + hours.join("") + "</tr>"
+        } else
+          ln = ""
+        return (
+          (lines[ln_num-1] === undefined || !is_outg(lines[ln_num-1]) ? thead() : "")
+          + ln
+          + (lines[ln_num+1] === undefined || !is_outg(lines[ln_num+1]) ? "</table>" : "")
+        )
+      }
+      return ln + "<br>"
+    }).join("")
+    document.body.appendChild(div)
+  }
+})()
+</script>
