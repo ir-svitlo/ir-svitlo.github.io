@@ -21,8 +21,24 @@ table {
 }
 td {
   border: 1px solid darkgray;
-  min-width: 2ch;
-  padding: 0.25em 0.25ch;
+  height: 1.5lh;
+  width: 1.5lh;
+  padding: 0;
+}
+tr:first-child td {
+  border-top: none;
+  border-bottom: none;
+  border-right: none;
+}
+tr:first-child td:first-child {
+  border-left: none;
+}
+td:first-child {
+  padding: 0 0.25lh;
+}
+td span {
+  margin-left: -1.5lh;
+  background-color: whitesmoke;
 }
 .light {
   background-color: #FF5;
@@ -42,7 +58,9 @@ td {
 <script>
 const is_outg = ln => ln.startsWith("Черга ")
 const thead = () => {
-  return "<table><tr><td></td><td>" + [...Array(24).keys()].join("</td><td>") + "</td></tr>"
+  return "<table><tr><td></td><td><span>"
+     + [...Array(24).keys()].join("</span></td><td><span>")
+     + "</span></td><td><span>0</span></td></tr>"
 }
 (async () => {
   const res = await fetch("https://api.codetabs.com/v1/proxy/?quest=https://t.me/s/SvitloKropyvnytskyiMisto")
