@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="uk">
+<head>
 <meta charset="utf-8">
 <base href="https://ir-svitlo.github.io/">
 <title>Світло Кропивницький місто</title>
@@ -59,7 +60,26 @@ td span {
   text-size-adjust: 300%;
 }
 </style>
+</head>
+<body>
 <script>
+for (const brand of (navigator.userAgentData?.brands || [])) {
+  const b = brand.brand
+  const v = parseInt(brand.version)
+  switch (true) {
+    case (b == "Chromium" && v < 109):
+    case (b == "Google Chrome" && v < 138):
+    case (b == "Samsung Internet" && v < 28):
+      const msg = "Визначено застарілу версію браузера. Спробуйте оновити браузер або використайте останню версію Google Chrome"
+      document.write(
+        "<div class=\"js-message_text\"><b>"
+        + msg.replace(/(?= )/, " ".repeat(Math.max(245 - msg.length, 0)))  // 245 chars to enable mobile scaling
+        + "</b></div>"
+      )
+      throw 0
+  }
+}
+
 const is_outg = ln => ln.startsWith("Черга ")
 const thead = () => {
   return "<table><tr><td></td><td><span>"
