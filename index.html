@@ -80,13 +80,15 @@ for (const brand of (navigator.userAgentData?.brands || [])) {
   }
 }
 
-const is_outg = ln => ln.startsWith("Черга ")
+const match_qdata = ln => ln.match(/^\s*Черга\s*([0-9.]+)\s*:\s*(.*)/)
 const thead = () => {
   return "<table><tr><td></td><td><span>"
      + [...Array(24).keys()].join("</span></td><td><span>")
      + "</span></td><td><span>0</span></td></tr>"
 }
+onhashchange = () => { location.reload() }
 (async () => {
+  const queues = (location.hash == "#*" || location.hash.match(/[0-9.]+/g) || ["2.1", "6.1"])
   const res = await fetch("https://api.codetabs.com/v1/proxy/?quest=https://t.me/s/SvitloKropyvnytskyiMisto")
   const html = await res.text()
   const dom = new DOMParser().parseFromString(html, "text/html")
@@ -96,9 +98,10 @@ const thead = () => {
     div.classList.add("js-message_text")
     const lines = (m.innerHTML.split("<br>"))
     div.innerHTML = lines.map((ln, ln_num) => {
-      if (is_outg(ln)) {
-        const [name, data] = ln.split(/\s*:\s*/)
-        if (name == "Черга 2.1" || name == "Черга 6.1") {
+      const qdata = match_qdata(ln)
+      if (qdata) {
+        const [, q, data] = qdata
+        if (queues === true || queues.includes(q)) {
           const hours = Array(24).fill("<td class=\"light\"></td>")
           const outgs = data.split(/\s*,\s*/)
           for (const o of outgs) {
@@ -106,13 +109,13 @@ const thead = () => {
             for (let i = o1, len = hours.length; i < o2 && i < len; i++)
               hours[i] = "<td class=\"outage\"></td>"
           }
-          ln = "<tr><td>" + name + "</td>" + hours.join("") + "</tr>"
+          ln = "<tr><td>Черга " + q + "</td>" + hours.join("") + "</tr>"
         } else
           ln = ""
         return (
-          (lines[ln_num-1] === undefined || !is_outg(lines[ln_num-1]) ? thead() : "")
+          (lines[ln_num-1] === undefined || !match_qdata(lines[ln_num-1]) ? thead() : "")
           + ln
-          + (lines[ln_num+1] === undefined || !is_outg(lines[ln_num+1]) ? "</table>" : "")
+          + (lines[ln_num+1] === undefined || !match_qdata(lines[ln_num+1]) ? "</table>" : "")
         )
       }
       return ln + "<br>"
