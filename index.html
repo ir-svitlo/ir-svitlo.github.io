@@ -85,6 +85,12 @@ const thead = () => {
      + "</span></td><td><span>0</span></td></tr>"
 }
 onhashchange = () => { location.reload() }
+let last_unfocus
+onblur = (e) => { last_unfocus = e.timeStamp }
+onfocus = (e) => {
+  if (last_unfocus !== undefined && e.timeStamp - last_unfocus >= 60000)
+    location.reload()
+}
 (async () => {
   const queues = (location.hash == "#*" || location.hash.match(/[0-9.]+/g) || ["2.1", "6.1"])
   const res = await fetch("https://api.codetabs.com/v1/proxy/?quest=https://t.me/s/SvitloKropyvnytskyiMisto")
