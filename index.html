@@ -86,10 +86,16 @@ const thead = () => {
 }
 onhashchange = () => { location.reload() }
 let last_unfocus
-onblur = (e) => { last_unfocus = e.timeStamp }
-onfocus = (e) => {
-  if (last_unfocus !== undefined && e.timeStamp - last_unfocus >= 60000)
+onblur = () => { last_unfocus = Date.now() }
+onfocus = () => {
+  if (last_unfocus !== undefined && Date.now() - last_unfocus >= 60000)
     location.reload()
+}
+document.onvisibilitychange = () => {
+  if (document.hidden)
+    onblur()
+  else
+    onfocus()
 }
 (async () => {
   const queues = (location.hash == "#*" || location.hash.match(/[0-9.]+/g) || ["2.1", "6.1"])
