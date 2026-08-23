@@ -99,7 +99,9 @@ document.onvisibilitychange = () => {
 }
 (async () => {
   const queues = (location.hash == "#*" || location.hash.match(/[0-9.]+/g) || ["2.1", "6.1"])
-  const res = await fetch("https://api.codetabs.com/v1/proxy/?quest=https://t.me/s/SvitloKropyvnytskyiMisto")
+  const res = await fetch("https://proxy.cors.sh/https://t.me/s/SvitloKropyvnytskyiMisto", {
+    headers: {"x-cors-api-key": "live_9cb4259823e6607907b5d998c89b16c530bc6e51305eded3"},
+  })
   const html = await res.text()
   const dom = new DOMParser().parseFromString(html, "text/html")
   const msgs = Array.from(dom.querySelectorAll(".js-message_text")).reverse()
