@@ -99,7 +99,7 @@ document.onvisibilitychange = () => {
 }
 (async () => {
   const queues = (location.hash == "#*" || location.hash.match(/[0-9.]+/g) || ["2.1", "6.1"])
-  const res = await fetch("https://api.codetabs.com/v1/proxy/?quest=https://t.me/s/SvitloKropyvnytskyiMisto")
+  const res = await fetch("https://ir-svitlo.sluggish.workers.dev")
   const html = await res.text()
   const dom = new DOMParser().parseFromString(html, "text/html")
   const msgs = Array.from(dom.querySelectorAll(".js-message_text")).reverse()
